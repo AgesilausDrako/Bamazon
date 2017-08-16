@@ -1,6 +1,5 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-var Table = require("cli-table");
 require("console.table");
 
 var connection = mysql.createConnection({
@@ -10,6 +9,7 @@ var connection = mysql.createConnection({
     password: "root",
     database: "bamazon"
   });
+  var salesTotal;
 
   connection.connect(function(err) {
     if (err) throw err;
@@ -20,9 +20,7 @@ var connection = mysql.createConnection({
 function createTable() {
   connection.query("SELECT * FROM products", function(err, results) {
     if (err) throw err;
-    
     console.table(results);
-    
   });
 }
 
@@ -34,36 +32,67 @@ function start() {
       .prompt([
         {
           name: "choice",
-          type: "list",
+          type: "rawlist",
           choices: function() {
             var choiceArray = [];
             for (var i = 0; i < results.length; i++) {
-              choiceArray.push(results[i].item_id + "  " + results[i].product_name);
+              choiceArray.push(results[i].product_name);
             }
             return choiceArray;
           },
-          message: "What product would you like to buy?\n"
+          message: "What is the product you would like to buy?\n"
         },
         {
           name: "purchase_quantity",
           type: "input",
-          message: "How many would you like to buy?\n"
+          message: "How many units would you like to buy?\n",
+          validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+          }
         }
       ]).then(function(answer) {
         // get the information of the chosen item
         var chosenItem;
         for (var i = 0; i < results.length; i++) {
-          if (results[i].item_id === answer.choice) {
+          if (results[i].product_name === answer.choice) {
             chosenItem = results[i];
           }
+          console.log(chosenItem);
         }
-        console.log(answer.purchase_quantity);
-        if (answer.purchase_quantity > chosenItem.stock_quantity) {
-          console.log("Insufficient quantity");
-          return false;
-        } else {
-          return true;
-        }
+        
+       
+        // if (answer.purchase_quantity > parseInt(chosenItem.stock_quantity)) {
+        //   console.log("Insufficient quantity");
+        //   return false;
+        // } else {
+        //   var updatedQuantity = parseInt(chosenItem.stock_quantity) - parseInt(answer.purchase_quanitity);
+        //   var unitPurchase = parseInt(answer.purchase_quantity) * parseInt(chosenItem.price);
+        //   connection.query("UPDATE products SET ? WHERE ?", [
+        //     {
+        //       stock_quantity: updatedQuantity
+        //     },
+        //     {
+        //       item_id: chosenItem.id
+        //     }
+        //     ],function(err) {
+        //       if (err) throw err;
+              
+        //       console.log("Your order was placed!");
+        //       salesTotal += unitPurchase;
+        //       console.log("Your purchase total is: $ " + salesTotal + ".");
+        //     });
+        // }
       });
   });
 }
+
+// choices: function() {
+//   var choiceArray = [];
+//   for (var i = 0; i < results.length; i++) {
+//     choiceArray.push(results[i].item_id + "  " + results[i].product_name);
+//   }
+//   return choiceArray;
+// },

@@ -11,7 +11,7 @@ This application has certain npm package dependencies in order to run.
 They are: mysql, inquirer, and console.table.
 Before running the application it is necessary to navigate to the folder containing all of the application files and run the following command in the terminal: npm init
 This will install all the packages and there necessary versions.
-** Please be advised that console.table will not run on any version of node.js higher than version 6. Any version higher than 6 will result in application failure. **
+**Please be advised that console.table will not run on any version of node.js higher than version 6. Any version higher than 6 will result in application failure.**
 
 ## Utilization
 In order to run Bamazon the user will need to: 

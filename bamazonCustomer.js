@@ -1,6 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-require("console.table");
+var table = require("console.table");
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -9,13 +9,12 @@ var connection = mysql.createConnection({
     password: "root",
     database: "bamazon"
   });
-  var salesTotal = 0;
 
   connection.connect(function(err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
     createTable();
-    start();
+    buyProduct();
   });
 
 function createTable() {
@@ -25,7 +24,7 @@ function createTable() {
   });
 }
 
-function start() {
+function buyProduct() {
   connection.query("SELECT * FROM products", function(err, results) {
     if (err) throw err;
     inquirer
@@ -67,10 +66,9 @@ function start() {
           return false;
         } else {
           var updatedQuantity = chosenItem.stock_quantity - answer.purchase_quantity;
-          console.log(updatedQuantity);
+          // console.log(updatedQuantity);
           var unitPurchase = answer.purchase_quantity * chosenItem.price;
-          console.log(unitPurchase);
-          console.log(chosenItem.id);
+          // console.log(unitPurchase);
           connection.query("UPDATE products SET ? WHERE ?", [
             {
               stock_quantity: updatedQuantity
@@ -84,7 +82,7 @@ function start() {
               console.log("Your purchase total for " + answer.purchase_quantity + " units of " + 
               chosenItem.product_name + " is: $" + unitPurchase + ".");
               createTable();
-              start();
+              buyProduct();
             });
         }
       });

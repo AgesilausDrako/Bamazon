@@ -9,7 +9,7 @@ Bamazon is a backend application, utilizing node.js and a mysql server, to repre
 ## Important Details
 This application has certain npm package dependencies in order to run.
 They are: mysql, inquirer, and console.table.
-Before running the application it is necessary to navigate to the folder containing all of the application files and run the following command in the terminal: npm init
+Before running the application it is necessary to navigate to the folder containing all of the application files and run the following command in the terminal: **npm install**
 This will install all the packages and their necessary versions.
 
 **Please be advised that console.table will not run on any version of node.js higher than version 6. Any version higher than 6 will result in application failure. v6.11.2 is the version used in the video demonstration**

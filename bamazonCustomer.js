@@ -9,11 +9,12 @@ var connection = mysql.createConnection({
     password: "root",
     database: "bamazon"
   });
-  var salesTotal;
+  var salesTotal = 0;
 
   connection.connect(function(err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
+    createTable();
     start();
   });
 
@@ -25,7 +26,6 @@ function createTable() {
 }
 
 function start() {
-  createTable();
   connection.query("SELECT * FROM products", function(err, results) {
     if (err) throw err;
     inquirer
@@ -54,45 +54,39 @@ function start() {
           }
         }
       ]).then(function(answer) {
-        // get the information of the chosen item
         var chosenItem;
         for (var i = 0; i < results.length; i++) {
           if (results[i].product_name === answer.choice) {
             chosenItem = results[i];
+            // console.log(chosenItem);
           }
-          console.log(chosenItem);
         }
         
-       
-        // if (answer.purchase_quantity > parseInt(chosenItem.stock_quantity)) {
-        //   console.log("Insufficient quantity");
-        //   return false;
-        // } else {
-        //   var updatedQuantity = parseInt(chosenItem.stock_quantity) - parseInt(answer.purchase_quanitity);
-        //   var unitPurchase = parseInt(answer.purchase_quantity) * parseInt(chosenItem.price);
-        //   connection.query("UPDATE products SET ? WHERE ?", [
-        //     {
-        //       stock_quantity: updatedQuantity
-        //     },
-        //     {
-        //       item_id: chosenItem.id
-        //     }
-        //     ],function(err) {
-        //       if (err) throw err;
-              
-        //       console.log("Your order was placed!");
-        //       salesTotal += unitPurchase;
-        //       console.log("Your purchase total is: $ " + salesTotal + ".");
-        //     });
-        // }
+        if (answer.purchase_quantity > chosenItem.stock_quantity) {
+          console.log("Insufficient quantity");
+          return false;
+        } else {
+          var updatedQuantity = chosenItem.stock_quantity - answer.purchase_quantity;
+          console.log(updatedQuantity);
+          var unitPurchase = answer.purchase_quantity * chosenItem.price;
+          console.log(unitPurchase);
+          console.log(chosenItem.id);
+          connection.query("UPDATE products SET ? WHERE ?", [
+            {
+              stock_quantity: updatedQuantity
+            },
+            {
+              item_id: chosenItem.item_id
+            }
+          ],function(err) {
+              if (err) throw err;
+              console.log("Your order was placed!");
+              console.log("Your purchase total for " + answer.purchase_quantity + " units of " + 
+              chosenItem.product_name + " is: $" + unitPurchase + ".");
+              createTable();
+              start();
+            });
+        }
       });
   });
 }
-
-// choices: function() {
-//   var choiceArray = [];
-//   for (var i = 0; i < results.length; i++) {
-//     choiceArray.push(results[i].item_id + "  " + results[i].product_name);
-//   }
-//   return choiceArray;
-// },

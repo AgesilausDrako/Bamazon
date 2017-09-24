@@ -17,7 +17,7 @@ This will install all the packages and their necessary versions according to the
 ## Utilization
 In order to run Bamazon the user will need to: 
 1. Pull the files and navigate to the proper folder. 
-2. Run the bamazonCustomer.js in the terminal with the command: node bamazonCustomer.js.
+2. Run the bamazonCustomer.js in the terminal with the command: **node bamazonCustomer.js**.
 3. View the product list table printed out in the terminal.
 4. Select the desired product by id number when prompted.
 5. Indicate the number of units desired when prompted.
